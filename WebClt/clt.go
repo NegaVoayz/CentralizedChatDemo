@@ -14,11 +14,16 @@ var clt_id uint32
 var names map[uint32]string
 var inputReader *bufio.Reader
 
-const server_name string = "localhost:8080"
-
 func main() {
 	inputReader = bufio.NewReader(os.Stdin)
 	names = make(map[uint32]string, 0)
+	server_name := "localhost:8080"
+	if len(os.Args) > 1 {
+		matched, err := regexp.Match("^[a-zA-Z0-9.:]*", []byte(os.Args[1]))
+		if err == nil && matched {
+			server_name = os.Args[1]
+		}
+	}
 	conn, err := net.Dial("tcp", server_name)
 	if err != nil {
 		fmt.Println("Error:", err)
