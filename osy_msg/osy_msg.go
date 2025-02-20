@@ -40,20 +40,6 @@ func SetMessage(
 	return ans
 }
 
-/*
-func PullMessage(
-	timestamp time.Time,
-	sender_id uint32) OsyMessage {
-	var ans OsyMessage
-	ans.Timestamp = timestamp
-	ans.Sender_id = sender_id
-	ans.Receiver_id = 0
-	ans.Message_type = 2
-	ans.Message_size = 0
-	ans.Message_body = make([]byte, 0)
-	return ans
-}*/
-
 func SendMessage(conn_ptr *net.Conn, msg_ptr *OsyMessage) bool {
 	buf := new(bytes.Buffer)
 
@@ -70,15 +56,25 @@ func SendMessage(conn_ptr *net.Conn, msg_ptr *OsyMessage) bool {
 
 func RecvFull(conn_ptr *net.Conn, length int32) (buf_return []byte, done bool) {
 	done = false
+	buf_return = make([]byte, 0)
+
 	buf_temp := make([]byte, length)
 	n, err := (*conn_ptr).Read(buf_temp)
-	for n != int(length) && n != 0 && err == nil {
-		buf_return = append(buf_return, buf_temp[:n]...)
-		buf_temp = make([]byte, length-int32(n))
-		n, err = (*conn_ptr).Read(buf_temp)
+	if n == 0 || err != nil {
+		return
 	}
-	buf_return = append(buf_return, buf_temp...)
-	done = len(buf_return) == int(length)
+
+	for n != int(length) {
+		buf_return = append(buf_return, buf_temp[:n]...)
+		length -= int32(n)
+		buf_temp = make([]byte, length)
+		n, err = (*conn_ptr).Read(buf_temp)
+		if n == 0 || err != nil {
+			return
+		}
+	}
+	buf_return = append(buf_return, buf_temp[:n]...)
+	done = true
 	return
 }
 

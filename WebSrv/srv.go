@@ -101,7 +101,7 @@ func SrvConnProcPush(conn_ptr *net.Conn, clt_id uint32) {
 		if id == 0 || id == clt_id {
 			continue
 		}
-		send_buf := osy_msg.SetMessage(0, id, 2, uint32(len(name)), []byte(name))
+		send_buf := osy_msg.SetMessage(id, clt_id, 2, uint32(len(name)), []byte(name))
 		osy_msg.SendMessage(conn_ptr, &send_buf)
 	}
 
