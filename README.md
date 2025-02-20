@@ -1,8 +1,6 @@
 # Centralized Chat Demo
 A simplest chat room with literally no synchronization.
 
-[Toc]
-
 ## Message Standard
 
 ### Package Design
